@@ -9,14 +9,25 @@ export default function AuthLayout({
 }) {
   return (
     <Suspense>
-      <div className="flex h-screen flex-col items-center justify-between gap-8 py-8">
+      <div className="flex h-screen flex-col items-center justify-between gap-8 py-8 mx-4">
         <Logo />
+        <div>
+          <h2>A better way to organize webinars</h2>
+          <p></p>
+        </div>
         <div className="w-full max-w-md">{children}</div>
         <div>
           <p className="text-sm w-full max-w-md">
             By proceeding you acknowledge that you have read, understood and
-            agree to our <Link href="/legal/terms">Terms of Service</Link> and{" "}
-            <Link href="/legal/privacy">Privacy Policy</Link>.
+            agree to our{" "}
+            <Link href="/legal/terms" className="underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/legal/privacy" className="underline">
+              Privacy Policy
+            </Link>
+            .
           </p>
         </div>
       </div>
