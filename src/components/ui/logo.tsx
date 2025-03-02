@@ -12,7 +12,7 @@ export default function Logo() {
           height={24}
           className="rounded-lg shadow-md"
         />
-        <figcaption>Qwebinar</figcaption>
+        <figcaption className="text-xl text-black">Qwebinar</figcaption>
       </figure>
     </Link>
   );

@@ -22,6 +22,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/home/page.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/home/page.js", "src/components/features/authentication/AuthButton.ts", "src/lib/actions.js", "src/lib/auth.js", "src/lib/auth.js"],
   "exclude": ["node_modules"]
 }

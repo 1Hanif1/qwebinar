@@ -11,10 +11,7 @@ export default function AuthLayout({
     <Suspense>
       <div className="flex h-screen flex-col items-center justify-between gap-8 py-8 mx-4">
         <Logo />
-        <div>
-          <h2>A better way to organize webinars</h2>
-          <p></p>
-        </div>
+
         <div className="w-full max-w-md">{children}</div>
         <div>
           <p className="text-sm w-full max-w-md">
