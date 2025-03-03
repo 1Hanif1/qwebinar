@@ -6,5 +6,5 @@ export async function SignInAction() {
 }
 
 export async function SignOutAction() {
-  await signOut({ redirectTo: "/auth" });
+  await signOut({ redirectTo: "/sign-in" });
 }
