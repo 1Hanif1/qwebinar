@@ -13,6 +13,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import Logo from "@/components/ui/logo";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import Image from "next/image";
 
 // Menu items.
 const items = [
@@ -28,7 +31,11 @@ const items = [
   },
 ];
 
-export function AppSidebar() {
+export async function AppSidebar() {
+  const session = await getServerSession(authOptions);
+  const name = session?.user?.name;
+  const email = session?.user?.email;
+  const image = session?.user?.image;
   return (
     <Sidebar>
       <SidebarHeader>
@@ -56,18 +63,23 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarGroupLabel className="my-4">
-          <a href="#" className="flex items-center gap-2 w-full bg-white p-4 ">
-            <img
-              alt=""
-              src="https://images.unsplash.com/photo-1600486913747-55e5470d6f40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+          <a
+            href="#"
+            className="relative flex items-center gap-2 w-full bg-white p-4 "
+          >
+            <Image
+              alt="Avatar"
+              src={image}
+              width={40}
+              height={40}
               className="size-10 rounded-full object-cover"
             />
 
             <div>
               <p className="text-xs">
-                <strong className="block font-medium">Hanif Barbhuiya</strong>
+                <strong className="block font-medium">{name}</strong>
 
-                <span> Email </span>
+                <span className="block w-full overflow-scroll">{email}</span>
               </p>
             </div>
           </a>

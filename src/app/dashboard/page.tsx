@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 
-function page() {
+async function page() {
+  // const session = await auth();
+  // if (!session) return redirect("/sign-in");
   redirect("/dashboard/home");
 }
 

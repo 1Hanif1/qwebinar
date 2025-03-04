@@ -29,7 +29,7 @@
     ".next/types/**/*.ts",
     "src/app/home/page.js",
     "src/components/features/authentication/AuthButton.ts",
-    "src/lib/actions.js",
+    "src/lib/actions.ts",
     "src/lib/auth.ts",
     "src/lib/auth.ts"
   ],
