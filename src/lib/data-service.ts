@@ -37,7 +37,15 @@ export async function getHost({ email }: { email: string }) {
   }
 }
 
-export async function createRoom() {}
+export async function createRoom({
+  roomName,
+  numOfAttendees,
+  hostId,
+}: {
+  roomName: string;
+  numOfAttendees: number;
+  hostId: number;
+}) {}
 
 export async function createMessage() {}
 

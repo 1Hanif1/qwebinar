@@ -13,12 +13,14 @@ export default async function Layout({
   if (!session) redirect("/sign-in");
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <main className="w-full h-full overflow-y-auto">
-        <SidebarTrigger className="md:hidden" />
-        {children}
-      </main>
-    </SidebarProvider>
+    <>
+      <SidebarProvider>
+        <AppSidebar />
+        <main className="w-full h-full overflow-y-auto">
+          <SidebarTrigger className="md:hidden" />
+          {children}
+        </main>
+      </SidebarProvider>
+    </>
   );
 }
