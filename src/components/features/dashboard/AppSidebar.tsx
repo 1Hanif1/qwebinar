@@ -16,8 +16,6 @@ import Logo from "@/components/ui/logo";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { SignOutAction } from "@/lib/actions";
 import SignOutButton from "./SignOutButton";
 
 // Menu items.

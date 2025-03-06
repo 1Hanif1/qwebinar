@@ -47,12 +47,13 @@ function Header({ user }) {
           </div>
         </div>
       </header>
-      <CreateRoomModal
-        visible={showModal}
-        isPremiumUser={premium}
-        showModal={setShowModal}
-        hostId={id}
-      />
+      {showModal && (
+        <CreateRoomModal
+          isPremiumUser={premium}
+          showModal={setShowModal}
+          hostId={id}
+        />
+      )}
     </>
   );
 }
