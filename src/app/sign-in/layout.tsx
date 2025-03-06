@@ -10,7 +10,7 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   return (
     <Suspense>
       <div className="flex h-screen flex-col items-center justify-between gap-8 py-8 mx-4">

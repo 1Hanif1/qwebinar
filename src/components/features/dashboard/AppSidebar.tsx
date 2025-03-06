@@ -16,6 +16,9 @@ import Logo from "@/components/ui/logo";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { SignOutAction } from "@/lib/actions";
+import SignOutButton from "./SignOutButton";
 
 // Menu items.
 const items = [
@@ -62,27 +65,24 @@ export async function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarGroupLabel className="my-4">
-          <a
-            href="#"
-            className="relative flex items-center gap-2 w-full bg-white p-4 "
-          >
+        <SidebarGroupLabel className="flex flex-col mb-24 w-full">
+          <div className="flex items-center gap-2 w-full bg-white p-4 mb-2">
             <Image
               alt="Avatar"
-              src={image}
+              src={image || "/default-avatar.png"}
               width={40}
               height={40}
               className="size-10 rounded-full object-cover"
             />
 
-            <div>
-              <p className="text-xs">
-                <strong className="block font-medium">{name}</strong>
-
-                <span className="block w-full overflow-scroll">{email}</span>
+            <div className="overflow-hidden">
+              <p className="text-xs break-words">
+                <strong className="block font-medium truncate">{name}</strong>
+                <span className="block w-full truncate">{email}</span>
               </p>
             </div>
-          </a>
+          </div>
+          <SignOutButton />
         </SidebarGroupLabel>
       </SidebarFooter>
     </Sidebar>

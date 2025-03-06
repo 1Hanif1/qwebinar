@@ -10,11 +10,11 @@ import { BorderTrail } from "@/components/ui/border-trail";
 
 import AuthButton from "@/components/features/authentication/AuthButton";
 import { TextEffect } from "@/components/ui/text-effect";
-import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 const SignInPage: React.FC = () => {
-  const session = useSession();
+  const { data: session } = useSession();
   if (session) redirect("/dashboard");
 
   return (

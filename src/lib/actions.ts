@@ -1,3 +1,5 @@
+"use server";
+
 import { createRoom } from "./data-service";
 
 export async function createRoomAction(FormData: FormData) {
@@ -11,3 +13,5 @@ export async function createRoomAction(FormData: FormData) {
     hostId: Number(hostId),
   });
 }
+
+export async function SignOutAction() {}
