@@ -3,6 +3,8 @@ import { AppSidebar } from "@/components/features/dashboard/AppSidebar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import SessionProviderWrapper from "@/utils/SessionProviderWrapper";
+import HostProviderWrapper from "@/utils/HostProviderWrapper";
 
 export default async function Layout({
   children,
@@ -14,13 +16,17 @@ export default async function Layout({
 
   return (
     <>
-      <SidebarProvider>
-        <AppSidebar />
-        <main className="w-full h-full overflow-y-auto">
-          <SidebarTrigger className="md:hidden" />
-          {children}
-        </main>
-      </SidebarProvider>
+      <SessionProviderWrapper session={session}>
+        <HostProviderWrapper>
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="w-full h-full overflow-y-auto">
+              <SidebarTrigger className="md:hidden" />
+              {children}
+            </main>
+          </SidebarProvider>
+        </HostProviderWrapper>
+      </SessionProviderWrapper>
     </>
   );
 }

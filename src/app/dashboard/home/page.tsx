@@ -1,14 +1,27 @@
-"use server";
-import { getServerSession } from "next-auth";
+"use client";
+import { useHostContext } from "@/contexts/HostContext";
 import Header from "./_components/Header";
-import { authOptions } from "@/lib/auth";
-import { getHost } from "@/lib/data-service";
+import { useSession } from "next-auth/react";
+import Spinner from "@/components/ui/Spinner";
+import { useEffect } from "react";
 
-export default async function Page() {
-  const session = await getServerSession(authOptions);
+export default function Page() {
+  const { data: session } = useSession();
   const email = session?.user?.email;
-  if (!email) throw new Error("Something went wrong, please login again");
-  const host = await getHost({ email });
+  if (!email) throw new Error("Something went wrong");
+  const { host, getHostData, isLoading } = useHostContext();
+
+  useEffect(() => {
+    if (host?.full_name === "%NAME%") getHostData(email);
+  }, [email, host]);
+
+  if (isLoading)
+    return (
+      <section className="w-full">
+        <Spinner />
+      </section>
+    );
+
   return (
     <section className="w-full">
       <Header user={host} />
