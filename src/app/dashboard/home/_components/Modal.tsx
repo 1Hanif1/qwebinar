@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Spinner from "@/components/ui/Spinner";
+import { useHostContext } from "@/contexts/HostContext";
 import { createRoomAction } from "@/lib/actions";
 import { useActionState, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -18,6 +19,7 @@ export default function CreateRoomModal({
   showModal,
   hostId = -1,
 }: CreateRoomModalProps) {
+  const { revalidate } = useHostContext();
   const [roomName, setRoomName] = useState("");
   const [numAttendees, setNumAttendees] = useState(10);
   const [formStatus, FormAction, isPending] = useActionState(
@@ -30,6 +32,7 @@ export default function CreateRoomModal({
       if (formStatus === true) {
         toast.success("Room was created");
         showModal(false);
+        revalidate();
       } else {
         toast.error("Could not create room");
       }

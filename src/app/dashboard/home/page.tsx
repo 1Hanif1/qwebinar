@@ -4,13 +4,13 @@ import Header from "./_components/Header";
 import { useSession } from "next-auth/react";
 import Spinner from "@/components/ui/Spinner";
 import { useEffect } from "react";
+import Rooms from "./_components/Rooms";
 
 export default function Page() {
   const { data: session } = useSession();
   const email = session?.user?.email;
   if (!email) throw new Error("Something went wrong");
   const { host, getHostData, isLoading } = useHostContext();
-
   useEffect(() => {
     if (host?.full_name === "%NAME%") getHostData(email);
   }, [email, host]);
@@ -25,6 +25,7 @@ export default function Page() {
   return (
     <section className="w-full">
       <Header user={host} />
+      <Rooms user={host} />
     </section>
   );
 }

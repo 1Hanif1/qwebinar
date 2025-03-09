@@ -32,6 +32,6 @@
     "src/lib/actions.ts",
     "src/lib/auth.ts",
     "src/lib/auth.ts"
-  ],
+, "src/app/dashboard/home/_components/Header.tsx"  ],
   "exclude": ["node_modules"]
 }

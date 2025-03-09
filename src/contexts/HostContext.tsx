@@ -3,7 +3,7 @@ import {
   IHostContextProps,
   IHostState,
 } from "@/interfaces/Interface";
-import { getHost } from "@/lib/data-service";
+import { getHost, getRooms } from "@/lib/data-service";
 import { ReactNode, useContext, useReducer } from "react";
 import { createContext } from "react";
 
@@ -13,6 +13,8 @@ const INIT_DATA: IHostState = {
     num_rooms: -1,
     premium: null,
     id: NaN,
+    rooms: [],
+    email: "",
   },
   isLoading: true,
 };
@@ -24,7 +26,10 @@ function REDUCER(state: IHostState, action: IActionCAPI) {
     case "loading":
       return { ...state, isLoading: true };
     case "host/data":
-      const host = action.payload;
+      const host = action.payload.host;
+      const rooms = action.payload.rooms;
+      host.num_rooms = rooms.length;
+      host.rooms = rooms;
       return { ...state, host, isLoading: false };
     default:
       return state;
@@ -37,14 +42,26 @@ function HostProvider({ children }: { children: ReactNode }) {
   async function getHostData(email: string) {
     dispatch({ type: "loading" });
     const host = await getHost({ email });
-    console.log(host);
-    dispatch({ type: "host/data", payload: host });
-    return host;
+    const rooms = await getRooms({ id: host.id });
+    host.email = email;
+    dispatch({ type: "host/data", payload: { host, rooms } });
+    return { host, rooms };
+  }
+
+  async function revalidate() {
+    if (!state.host.email) return;
+    await getHostData(state.host.email);
   }
 
   return (
     <HostContext.Provider
-      value={{ host: state.host, getHostData, isLoading: state.isLoading }}
+      value={{
+        host: state.host,
+        rooms: state.rooms,
+        getHostData,
+        revalidate,
+        isLoading: state.isLoading,
+      }}
     >
       {children}
     </HostContext.Provider>

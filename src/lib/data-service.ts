@@ -55,7 +55,16 @@ export async function createRoom({
 
 export async function createMessage() {}
 
-export async function getRooms() {}
+export async function getRooms({ id }) {
+  const { data, error } = await supabase
+    .from("Rooms")
+    .select()
+    .eq("hostId", id);
+
+  if (error) throw new Error(error.message);
+
+  return data;
+}
 
 export async function getMessages() {}
 
