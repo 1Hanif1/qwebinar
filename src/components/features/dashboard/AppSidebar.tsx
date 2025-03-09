@@ -67,7 +67,7 @@ export async function AppSidebar() {
           <div className="flex items-center gap-2 w-full bg-white p-4 mb-2">
             <Image
               alt="Avatar"
-              src={image || "/default-avatar.png"}
+              src={image || "/default-avatar.jpg"}
               width={40}
               height={40}
               className="size-10 rounded-full object-cover"

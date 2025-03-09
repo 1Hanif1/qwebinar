@@ -1,7 +1,26 @@
 import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
 
-function RoomCard({ room, room_number }) {
-  const { title, isActive } = room;
+const APP_URL = "http://localhost:3000";
+
+function RoomCard({ hostName, room, room_number }) {
+  const { title, isActive, code } = room;
+  async function shareHandler() {
+    console.log(window.location.href);
+    const text = `Room: ${title},\nHost: ${hostName},\nRoom Code: ${code
+      .split("-")
+      .slice(1, 3)
+      .join("-")}\nLink: ${APP_URL}/room?code=${code
+      .split("-")
+      .slice(1, 3)
+      .join("-")}`;
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success("details copied");
+    } catch {
+      toast.error("could not copy details");
+    }
+  }
   return (
     <a href="#" className="group relative block h-64 sm:h-80 lg:h-96">
       <span className="absolute inset-0 border-2 border-dashed border-black group-hover:border-primary"></span>
@@ -30,7 +49,7 @@ function RoomCard({ room, room_number }) {
             >
               {isActive ? "Active" : "Activate"}
             </Button>
-            <Button>Share</Button>
+            <Button onClick={shareHandler}>Share</Button>
             <Button>View</Button>
             <Button className="bg-red-600 hover:bg-red-900 text-white">
               Delete
@@ -43,7 +62,7 @@ function RoomCard({ room, room_number }) {
 }
 
 function Rooms({ user }) {
-  const { rooms } = user;
+  const { full_name: name, rooms } = user;
   return (
     <div className="w-full p-10 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
       {/* <div className="p-6 border rounded-lg">
@@ -65,7 +84,12 @@ function Rooms({ user }) {
         </div>
       </div> */}
       {rooms.map((room, index) => (
-        <RoomCard key={index} room_number={index + 1} room={room} />
+        <RoomCard
+          hostName={name}
+          key={index}
+          room_number={index + 1}
+          room={room}
+        />
       ))}
     </div>
   );

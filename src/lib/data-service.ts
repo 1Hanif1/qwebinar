@@ -28,7 +28,7 @@ export async function getHost({ email }: { email: string }) {
     .eq("email", email)
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) return null;
 
   return data;
 }
