@@ -68,4 +68,19 @@ export async function getRooms({ id }) {
 
 export async function getMessages() {}
 
-export async function getRoom() {}
+export async function getRoom({ id }) {
+  const { data, error } = await supabase
+    .from("Rooms")
+    .select()
+    .eq("id", id)
+    .single();
+
+  if (!data) return null;
+  return data;
+}
+
+export async function deleteRoom({ id }) {
+  const { error } = await supabase.from("Rooms").delete().eq("id", id);
+  if (error) return false;
+  else return true;
+}

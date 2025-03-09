@@ -1,10 +1,31 @@
 import { Button } from "@/components/ui/button";
+import { useHostContext } from "@/contexts/HostContext";
+import { deleteRoomAction } from "@/lib/actions";
+import { useActionState, useEffect } from "react";
 import toast from "react-hot-toast";
 
 const APP_URL = "http://localhost:3000";
 
-function RoomCard({ hostName, room, room_number }) {
-  const { title, isActive, code } = room;
+function RoomCard({ hostName, hostId, room, room_number }) {
+  const { revalidate } = useHostContext();
+  const { title, isActive, code, id: roomId } = room;
+  const [formStatus, FormAction, isPending] = useActionState(
+    deleteRoomAction,
+    null
+  );
+  useEffect(
+    function () {
+      if (formStatus === null || isPending) return;
+      if (formStatus) {
+        toast.success("Room Deleted!");
+        revalidate();
+      } else {
+        toast.error("Could not delete room");
+      }
+    },
+    [formStatus, isPending]
+  );
+
   async function shareHandler() {
     console.log(window.location.href);
     const text = `Room: ${title},\nHost: ${hostName},\nRoom Code: ${code
@@ -21,6 +42,7 @@ function RoomCard({ hostName, room, room_number }) {
       toast.error("could not copy details");
     }
   }
+
   return (
     <a href="#" className="group relative block h-64 sm:h-80 lg:h-96">
       <span className="absolute inset-0 border-2 border-dashed border-black group-hover:border-primary"></span>
@@ -51,9 +73,16 @@ function RoomCard({ hostName, room, room_number }) {
             </Button>
             <Button onClick={shareHandler}>Share</Button>
             <Button>View</Button>
-            <Button className="bg-red-600 hover:bg-red-900 text-white">
-              Delete
-            </Button>
+            <form action={FormAction} className="block w-full">
+              <input type="hidden" name="roomId" defaultValue={roomId} />
+              <Button
+                type="submit"
+                className="bg-red-600 hover:bg-red-900 text-white w-full"
+                disabled={isPending}
+              >
+                {isPending ? "Deleting..." : "Delete"}
+              </Button>
+            </form>
           </div>
         </div>
       </div>
@@ -62,7 +91,7 @@ function RoomCard({ hostName, room, room_number }) {
 }
 
 function Rooms({ user }) {
-  const { full_name: name, rooms } = user;
+  const { full_name: name, rooms, id } = user;
   return (
     <div className="w-full p-10 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
       {/* <div className="p-6 border rounded-lg">
@@ -86,6 +115,7 @@ function Rooms({ user }) {
       {rooms.map((room, index) => (
         <RoomCard
           hostName={name}
+          hostId={id}
           key={index}
           room_number={index + 1}
           room={room}
