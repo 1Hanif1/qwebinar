@@ -37,15 +37,17 @@ export async function createRoom({
   roomName: title,
   numOfAttendees: max_attendees,
   hostId,
+  duration = 30,
 }: {
   roomName: string;
   numOfAttendees: number;
   hostId: number;
+  duration: number;
 }) {
   const code = `CODE-${hostId}-${Date.now().toString(36)}`;
   const { data, error } = await supabase
     .from("Rooms")
-    .insert([{ title, max_attendees, hostId, code }])
+    .insert([{ title, max_attendees, hostId, code, duration }])
     .select();
 
   if (error) throw new Error(error.message);

@@ -22,6 +22,7 @@ export default function CreateRoomModal({
   const { revalidate } = useHostContext();
   const [roomName, setRoomName] = useState("");
   const [numAttendees, setNumAttendees] = useState(10);
+  const [duration, setDuration] = useState(30);
   const [formStatus, FormAction, isPending] = useActionState(
     createRoomAction,
     null
@@ -58,7 +59,7 @@ export default function CreateRoomModal({
 
   return (
     <>
-      <div className="absolute bg-slate-300/25 backdrop-blur-sm top-0 left-0 w-full h-screen flex justify-center items-center">
+      <div className="absolute bg-slate-300/25 backdrop-blur-sm top-0 left-0 w-full h-screen flex justify-center items-center z-10">
         {isPending ? (
           <Spinner />
         ) : (
@@ -94,6 +95,30 @@ export default function CreateRoomModal({
                 max={isPremiumUser ? undefined : 25}
                 onChange={(e) => setNumAttendees(+e.target.value)}
                 value={numAttendees}
+                required
+              />
+            </div>
+            <div className="my-6">
+              <label id="duration" className="font-bold">
+                Duration (minutes)
+                {!isPremiumUser && (
+                  <span className="block text-xs font-light my-2 text-red-500">
+                    Get premium to increase room duration
+                  </span>
+                )}
+              </label>
+              <Input
+                type="number"
+                name="duration"
+                title="Duration"
+                placeholder="e.g 30"
+                className={`${
+                  !isPremiumUser && "border border-red-500"
+                } block mt-2`}
+                min={30}
+                max={isPremiumUser ? undefined : 30}
+                onChange={(e) => setDuration(+e.target.value)}
+                value={duration}
                 required
               />
             </div>

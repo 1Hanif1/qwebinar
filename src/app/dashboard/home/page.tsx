@@ -23,7 +23,7 @@ export default function Page() {
     );
 
   return (
-    <section className="w-full">
+    <section className="w-full z-0">
       <Header user={host} />
       <Rooms user={host} />
     </section>

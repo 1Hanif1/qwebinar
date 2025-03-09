@@ -55,8 +55,9 @@ export const authOptions: AuthOptions = {
     async session({ session }) {
       const email = session?.user?.email;
       if (!email) throw new Error("Something went wrong, please log in again");
-      const { id } = await getHost({ email });
+      const { id, premium } = await getHost({ email });
       session.hostId = id;
+      session.premium = premium;
       return session;
     },
   },
