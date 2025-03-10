@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useHostContext } from "@/contexts/HostContext";
-import { deleteRoomAction } from "@/lib/actions";
+import { activateRoomAction, deleteRoomAction } from "@/lib/actions";
 import { useActionState, useEffect } from "react";
 import toast from "react-hot-toast";
 
@@ -8,7 +8,7 @@ const APP_URL = "http://localhost:3000";
 
 function RoomCard({ hostName, hostId, room, room_number }) {
   const { revalidate } = useHostContext();
-  const { title, isActive, code, id: roomId } = room;
+  const { title, active: isActive, code, id: roomId } = room;
   const [formStatus, FormAction, isPending] = useActionState(
     deleteRoomAction,
     null
@@ -26,7 +26,7 @@ function RoomCard({ hostName, hostId, room, room_number }) {
     [formStatus, isPending]
   );
 
-  async function shareHandler() {
+  async function handleShareRoom() {
     console.log(window.location.href);
     const text = `Room: ${title},\nHost: ${hostName},\nRoom Code: ${code
       .split("-")
@@ -43,17 +43,34 @@ function RoomCard({ hostName, hostId, room, room_number }) {
     }
   }
 
+  async function handleActivateRoom(isActive, roomId) {
+    const status = await activateRoomAction({ roomId, isActive });
+    if (status) revalidate();
+    else toast.error("Could not activate room");
+  }
+
   return (
     <a href="#" className="group relative block h-64 sm:h-80 lg:h-96">
       <span className="absolute inset-0 border-2 border-dashed border-black group-hover:border-primary"></span>
 
       <div className="relative flex h-full transform items-end border-2 border-black bg-white transition-transform group-hover:border-primary group-hover:-translate-x-2 group-hover:-translate-y-2">
         <div className="p-4 !pt-0 transition-opacity group-hover:absolute group-hover:opacity-0 sm:p-6 lg:p-8">
-          <span className="absolute top-5 left-5 block w-fit mb-4 text-xs py-1 px-6 text-white bg-green-500 rounded-full">
-            Active
+          {isActive ? (
+            <span className="absolute top-5 left-5 block w-fit mb-4 text-xs py-1 px-6 text-white bg-green-500 rounded-full">
+              Active
+            </span>
+          ) : (
+            <span className="absolute top-5 left-5 block w-fit mb-4 text-xs py-1 px-6 text-white bg-red-400 rounded-full">
+              In Active
+            </span>
+          )}
+          <span className="absolute top-5 right-5 block w-fit mb-4 text-xs py-1 px-6 text-white bg-gray-400 rounded-full">
+            Expires @6:30 pm
           </span>
-          <h1 className="text-4xl font-bold">ROOM #{room_number}</h1>
-          <h2 className="mt-4 text-xl font-medium sm:text-2xl">{room.title}</h2>
+          <h1 className="text-4xl font-bold">{room.title}</h1>
+          <h2 className="mt-4 text-xl font-medium sm:text-2xl">
+            Room #{room_number}
+          </h2>
         </div>
 
         <div className="absolute p-4 opacity-0 transition-opacity group-hover:relative group-hover:opacity-100 sm:p-6 lg:p-8">
@@ -66,12 +83,15 @@ function RoomCard({ hostName, hostId, room, room_number }) {
 
           <div className="grid grid-cols-2 justify-stretch gap-4">
             <Button
-              className={`${isActive ? "opacity-50 bg-secondary" : ""}`}
-              disabled={isActive}
+              className={`${
+                isActive ? "bg-red-600 hover:bg-red-900 text-white" : ""
+              }`}
+              onClick={() => handleActivateRoom(isActive, roomId)}
             >
-              {isActive ? "Active" : "Activate"}
+              {isActive ? "Deactivate" : "Activate"}
             </Button>
-            <Button onClick={shareHandler}>Share</Button>
+
+            <Button onClick={() => handleShareRoom()}>Share</Button>
             <Button>View</Button>
             <form action={FormAction} className="block w-full">
               <input type="hidden" name="roomId" defaultValue={roomId} />

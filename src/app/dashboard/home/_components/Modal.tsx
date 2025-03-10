@@ -98,7 +98,7 @@ export default function CreateRoomModal({
                 required
               />
             </div>
-            <div className="my-6">
+            {/* <div className="my-6">
               <label id="duration" className="font-bold">
                 Duration (minutes)
                 {!isPremiumUser && (
@@ -121,7 +121,7 @@ export default function CreateRoomModal({
                 value={duration}
                 required
               />
-            </div>
+            </div> */}
             <input type="hidden" name="host_id" defaultValue={hostId} />
             <div>
               <Button

@@ -1,18 +1,31 @@
 "use server";
 
 import { getServerSession } from "next-auth";
-import { createRoom, deleteRoom, getRoom } from "./data-service";
+import {
+  activateRoom,
+  createRoom,
+  deleteRoom,
+  getRoom,
+  getRoomFromCode,
+} from "./data-service";
 import { authOptions } from "./auth";
+
+export async function activateRoomAction({ roomId: id, isActive }) {
+  const { hostId } = await getServerSession(authOptions);
+  // need to check if host is allowed to delete room with current id
+  console.log("ACTION", id);
+  const room = await getRoom({ id });
+  if (room.hostId !== hostId) throw new Error("Unauthorized");
+  const status = await activateRoom({ id, val: !isActive });
+  return status;
+}
 
 export async function deleteRoomAction(
   state: boolean | null,
   FormData: FormData
 ) {
-  console.log(FormData);
   const id = FormData.get("roomId");
   const { hostId } = await getServerSession(authOptions);
-  console.log(hostId);
-  // need to check if host is allowed to delete room with current id
   const room = await getRoom({ id });
   if (room.hostId !== hostId) throw new Error("Unauthorized");
   const status = await deleteRoom({ id });
@@ -41,6 +54,13 @@ export async function createRoomAction(
   } catch {
     return false;
   }
+}
+
+export async function joinRoomAction({ code }) {
+  const room = await getRoomFromCode({ code });
+  console.log(room);
+  if (room) return true;
+  return false;
 }
 
 export async function SignOutAction() {}

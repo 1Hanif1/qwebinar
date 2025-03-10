@@ -55,8 +55,6 @@ export async function createRoom({
   return data;
 }
 
-export async function createMessage() {}
-
 export async function getRooms({ id }) {
   const { data, error } = await supabase
     .from("Rooms")
@@ -68,16 +66,40 @@ export async function getRooms({ id }) {
   return data;
 }
 
-export async function getMessages() {}
-
 export async function getRoom({ id }) {
   const { data, error } = await supabase
     .from("Rooms")
     .select()
     .eq("id", id)
     .single();
-
+  console.log("Error", error);
   if (!data) return null;
+  return data;
+}
+
+export async function getRoomFromCode({ code }) {
+  const { data: room_data, error: room_error } = await supabase
+    .from("Rooms")
+    .select()
+    .eq("code", `CODE-${code}`)
+    .single();
+  if (room_error) console.log("Room Error", room_error);
+
+  if (!room_data) return null;
+
+  const { data: host_data, error: host_error } = await supabase
+    .from("Hosts")
+    .select()
+    .eq("id", room_data.hostId)
+    .single();
+
+  console.log(host_data);
+
+  const data = {
+    ...room_data,
+    host_name: host_data.full_name,
+  };
+
   return data;
 }
 
@@ -86,3 +108,18 @@ export async function deleteRoom({ id }) {
   if (error) return false;
   else return true;
 }
+
+export async function activateRoom({ id, val = true }) {
+  const { data, error } = await supabase
+    .from("Rooms")
+    .update({ active: val })
+    .eq("id", id)
+    .select();
+
+  if (!data) return false;
+  return true;
+}
+
+export async function createMessage() {}
+
+export async function getMessages() {}
