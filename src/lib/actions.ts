@@ -3,12 +3,14 @@
 import { getServerSession } from "next-auth";
 import {
   activateRoom,
+  addQuestion,
   createRoom,
   deleteRoom,
   getRoom,
   getRoomFromCode,
 } from "./data-service";
 import { authOptions } from "./auth";
+import supabase from "@/config/supabase";
 
 export async function activateRoomAction({ roomId: id, isActive }) {
   const { hostId } = await getServerSession(authOptions);
@@ -40,7 +42,7 @@ export async function createRoomAction(
   const roomName = FormData.get("room_name") as string;
   const numOfAttendees = FormData.get("num_of_attendees");
   const hostId = FormData.get("host_id");
-  const duration = FormData.get("duration");
+  const duration = FormData.get("duration") || 30;
   if (!premium && +duration > 30) return false;
   if (!roomName || !numOfAttendees || !hostId) return false;
   try {
@@ -56,11 +58,36 @@ export async function createRoomAction(
   }
 }
 
-export async function joinRoomAction({ code }) {
+// {status, data, error}
+export async function joinRoomAction({ code, user_name }) {
   const room = await getRoomFromCode({ code });
-  console.log(room);
-  if (room) return true;
-  return false;
+  if (!room) return { status: false, data: null, error: "No room found" };
+
+  // Check if user exists in db else create new user
+
+  // Return {user_data, room_code}
+  return { status: true };
+}
+
+export async function askQuestionAction({ question, code }) {
+  // get room
+  const room = await getRoomFromCode({ code });
+  if (!room) return { status: false, data: null, error: "No room found" };
+
+  // Check if it is active
+  if (!room.active)
+    return {
+      status: false,
+      data: null,
+      error: "Room is inactive. Contact Host!",
+    };
+
+  // add question to room with id
+  const result = await addQuestion({ question, room_id: room.id });
+  if (!result)
+    return { status: false, data: null, error: "Something went wrong" };
+  // return true
+  return { status: true };
 }
 
 export async function SignOutAction() {}

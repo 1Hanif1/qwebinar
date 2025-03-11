@@ -11,14 +11,30 @@ import { TextEffect } from "@/components/ui/text-effect";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
+import { redirect } from "next/navigation";
+import { askQuestionAction } from "@/lib/actions";
 
-const SignInPage: React.FC = () => {
+const Page: React.FC = () => {
+  const room_code =
+    typeof window !== "undefined"
+      ? localStorage.getItem("qwebinar_room_code")
+      : null;
+  const attendee =
+    typeof window !== "undefined"
+      ? localStorage.getItem("qwebinar_attendee")
+      : null;
+  const email =
+    typeof window !== "undefined"
+      ? localStorage.getItem("qwebinar_attendee_email")
+      : null;
+
   const [textContent, setTextContent] = useState("");
   const [timer, setTimer] = useState(0);
 
-  // ✅ Ensure this only runs on the client-side
   useEffect(() => {
     if (typeof window === "undefined") return; // Prevent SSR errors
+
+    if (!room_code || !attendee || !email) return redirect("/room");
 
     const savedTime = localStorage.getItem("timer");
 
@@ -36,14 +52,30 @@ const SignInPage: React.FC = () => {
     setTimer(60 - diff);
   }, []);
 
-  const handleAskQuestion = function () {
+  const handleAskQuestion = async function () {
     if (!textContent) return toast.error("Please ask a question");
     setTimer(60);
 
     // ✅ Ensure localStorage only runs on the client
     if (typeof window !== "undefined") {
-      localStorage.setItem("timer", Math.floor(Date.now() / 1000));
+      localStorage.setItem("timer", String(Math.floor(Date.now() / 1000)));
     }
+
+    const room_code = localStorage.getItem("qwebinar_room_code");
+    const attendee = localStorage.getItem("qwebinar_attendee");
+    const email = localStorage.getItem("qwebinar_attendee_email");
+
+    if (!room_code || !attendee || !email) return redirect("/room");
+
+    const response = await askQuestionAction({
+      question: textContent,
+      code: room_code,
+    });
+
+    if (!response.status) return toast.error(response.error || "");
+
+    setTextContent("");
+    toast.success("Question Asked");
   };
 
   useEffect(() => {
@@ -78,21 +110,23 @@ const SignInPage: React.FC = () => {
             preset="blur"
             className="text-4xl text-center font-bold"
           >
-            Ask your Questions!
+            Ask your Question!
           </TextEffect>
         </CardHeader>
 
         <CardBody>
           <div className="my-4">
-            <label id="question" className="block mb-2 font-bold text-2xl">
-              Question
-            </label>
             <Textarea
               placeholder="Type your message here. Make sure it is descriptive"
               value={textContent}
               onChange={(e) => setTextContent(e.target.value)}
               required
             />
+          </div>
+          <div className="my-4">
+            <div>{attendee}, keep your questions descriptive!</div>
+            <div className="my-2">Email: {email}</div>
+            <div>Room: {room_code}</div>
           </div>
           <Button
             disabled={timer !== 0}
@@ -107,4 +141,4 @@ const SignInPage: React.FC = () => {
   );
 };
 
-export default SignInPage;
+export default Page;

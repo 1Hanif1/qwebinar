@@ -120,6 +120,15 @@ export async function activateRoom({ id, val = true }) {
   return true;
 }
 
-export async function createMessage() {}
+export async function addQuestion({ question, room_id }) {
+  const { data, error } = await supabase
+    .from("Questions")
+    .insert([{ question, room_id }])
+    .select();
+
+  if (!data) console.log("Error ", error);
+
+  return data;
+}
 
 export async function getMessages() {}

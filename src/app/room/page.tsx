@@ -15,15 +15,28 @@ import { redirect, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { joinRoomAction } from "@/lib/actions";
 
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 const SignInPage: React.FC = () => {
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
-
   const [roomCode, setRoomCode] = useState(code ? code : "");
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
   const handleRoomJoin = async function () {
-    const status = await joinRoomAction({ code: roomCode });
-    if (!status) return toast.error("Something went wrong");
-    redirect('/room/live');
+    if (!userName) return toast.error("Enter a valid name");
+    if (!emailRegex.test(email)) return toast.error("Enter a valid email");
+    const response = await joinRoomAction({
+      code: roomCode,
+      user_name: userName,
+      // email,
+    });
+    if (!response.status)
+      return toast.error(response.error || "Something went wrong");
+    localStorage.setItem("qwebinar_room_code", roomCode);
+    localStorage.setItem("qwebinar_attendee", userName);
+    localStorage.setItem("qwebinar_attendee_email", email);
+    redirect("/room/live");
   };
   return (
     <div className="flex justify-center items-center">
@@ -51,14 +64,26 @@ const SignInPage: React.FC = () => {
             <label id="attendee_name" className="mb-2">
               Your Name
             </label>
-            <Input name="attendee_name" type="text" required />
+            <Input
+              name="attendee_name"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              type="text"
+              required
+            />
           </div>
-          {/* <div className="my-4">
+          <div className="my-4">
             <label id="attendee_email" className="mb-2">
               Email
             </label>
-            <Input name="attendee_email" type="email" required />
-          </div> */}
+            <Input
+              name="attendee_email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
           <div className="my-4">
             <label id="room_code" className="mb-2">
               Room Code

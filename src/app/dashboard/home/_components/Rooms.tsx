@@ -64,9 +64,9 @@ function RoomCard({ hostName, hostId, room, room_number }) {
               In Active
             </span>
           )}
-          <span className="absolute top-5 right-5 block w-fit mb-4 text-xs py-1 px-6 text-white bg-gray-400 rounded-full">
+          {/* <span className="absolute top-5 right-5 block w-fit mb-4 text-xs py-1 px-6 text-white bg-gray-400 rounded-full">
             Expires @6:30 pm
-          </span>
+          </span> */}
           <h1 className="text-4xl font-bold">{room.title}</h1>
           <h2 className="mt-4 text-xl font-medium sm:text-2xl">
             Room #{room_number}
