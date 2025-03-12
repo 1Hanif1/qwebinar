@@ -20,7 +20,7 @@ export default async function Layout({
         <HostProviderWrapper>
           <SidebarProvider>
             <AppSidebar />
-            <main className="w-full h-full overflow-y-auto">
+            <main className="w-full h-screen overflow-y-auto min-h-screen">
               <SidebarTrigger className="md:hidden" />
               {children}
             </main>

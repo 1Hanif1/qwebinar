@@ -28,8 +28,8 @@ const SignInPage: React.FC = () => {
     if (!emailRegex.test(email)) return toast.error("Enter a valid email");
     const response = await joinRoomAction({
       code: roomCode,
-      user_name: userName,
-      // email,
+      name: userName,
+      email
     });
     if (!response.status)
       return toast.error(response.error || "Something went wrong");

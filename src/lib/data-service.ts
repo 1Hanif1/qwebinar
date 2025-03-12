@@ -33,6 +33,41 @@ export async function getHost({ email }: { email: string }) {
   return data;
 }
 
+export async function createAttendee({
+  name,
+  email,
+  room_id,
+}: {
+  name: string;
+  email: string;
+  room_id: number;
+}) {
+  try {
+    const { data, error } = await supabase
+      .from("Attendees")
+      .insert([{ name, email, room_id }])
+      .select();
+
+    if (error) throw new Error(error.message);
+
+    return data;
+  } catch {
+    throw new Error("Something went wrong, try again later");
+  }
+}
+
+export async function getAttendee({ email }: { email: string }) {
+  const { data, error } = await supabase
+    .from("Attendees")
+    .select()
+    .eq("email", email)
+    .single();
+
+  if (error) return null;
+
+  return data;
+}
+
 export async function createRoom({
   roomName: title,
   numOfAttendees: max_attendees,
@@ -131,4 +166,6 @@ export async function addQuestion({ question, room_id }) {
   return data;
 }
 
-export async function getMessages() {}
+export async function getQuestions({}) {
+
+}

@@ -4,8 +4,10 @@ import { getServerSession } from "next-auth";
 import {
   activateRoom,
   addQuestion,
+  createAttendee,
   createRoom,
   deleteRoom,
+  getAttendee,
   getRoom,
   getRoomFromCode,
 } from "./data-service";
@@ -59,12 +61,19 @@ export async function createRoomAction(
 }
 
 // {status, data, error}
-export async function joinRoomAction({ code, user_name }) {
+export async function joinRoomAction({ code, name, email }) {
   const room = await getRoomFromCode({ code });
   if (!room) return { status: false, data: null, error: "No room found" };
 
   // Check if user exists in db else create new user
+  let user = await getAttendee({ email });
+  if (!user) user = await createAttendee({ name, email, room_id: room.id });
 
+  return {
+    status: true,
+    name: user.name,
+    email: user.email,
+  };
   // Return {user_data, room_code}
   return { status: true };
 }
