@@ -78,7 +78,7 @@ export async function joinRoomAction({ code, name, email }) {
   return { status: true };
 }
 
-export async function askQuestionAction({ question, code }) {
+export async function askQuestionAction({ question, code, attendee, email }) {
   // get room
   const room = await getRoomFromCode({ code });
   if (!room) return { status: false, data: null, error: "No room found" };
@@ -92,7 +92,12 @@ export async function askQuestionAction({ question, code }) {
     };
 
   // add question to room with id
-  const result = await addQuestion({ question, room_id: room.id });
+  const result = await addQuestion({
+    question,
+    room_id: room.id,
+    attendee,
+    email,
+  });
   if (!result)
     return { status: false, data: null, error: "Something went wrong" };
   // return true

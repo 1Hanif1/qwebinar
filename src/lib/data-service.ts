@@ -155,10 +155,10 @@ export async function activateRoom({ id, val = true }) {
   return true;
 }
 
-export async function addQuestion({ question, room_id }) {
+export async function addQuestion({ question, room_id, attendee, email }) {
   const { data, error } = await supabase
     .from("Questions")
-    .insert([{ question, room_id }])
+    .insert([{ question, room_id, attendee, email }])
     .select();
 
   if (!data) console.log("Error ", error);
@@ -166,6 +166,4 @@ export async function addQuestion({ question, room_id }) {
   return data;
 }
 
-export async function getQuestions({}) {
-
-}
+export async function getQuestions({}) {}

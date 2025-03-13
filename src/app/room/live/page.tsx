@@ -70,6 +70,8 @@ const Page: React.FC = () => {
     const response = await askQuestionAction({
       question: textContent,
       code: room_code,
+      attendee,
+      email,
     });
 
     if (!response.status) return toast.error(response.error || "");
