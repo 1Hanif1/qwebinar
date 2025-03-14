@@ -167,3 +167,19 @@ export async function addQuestion({ question, room_id, attendee, email }) {
 }
 
 export async function getQuestions({}) {}
+
+export async function getAllAttendees({ room_id }) {
+  let { data: Attendees, error } = await supabase
+    .from("Attendees")
+    .select("*")
+    .eq("room_id", room_id);
+
+  if (!Attendees) console.log("Can not pull attendees");
+
+  return Attendees;
+}
+
+export async function numOfAttendees({ room_id }) {
+  const attendees = await getAllAttendees({ room_id });
+  return attendees?.length || 0;
+}

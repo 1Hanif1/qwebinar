@@ -7,12 +7,12 @@ import {
   createAttendee,
   createRoom,
   deleteRoom,
+  getAllAttendees,
   getAttendee,
   getRoom,
   getRoomFromCode,
 } from "./data-service";
 import { authOptions } from "./auth";
-import supabase from "@/config/supabase";
 
 export async function activateRoomAction({ roomId: id, isActive }) {
   const { hostId } = await getServerSession(authOptions);
@@ -67,15 +67,21 @@ export async function joinRoomAction({ code, name, email }) {
 
   // Check if user exists in db else create new user
   let user = await getAttendee({ email });
-  if (!user) user = await createAttendee({ name, email, room_id: room.id });
+  if (!user) {
+    const numAttendees = await getAllAttendees({ room_id: room.id });
+    if (!numAttendees || numAttendees >= room.max_attendees)
+      return {
+        status: false,
+        message: "Room is full",
+      };
+    user = await createAttendee({ name, email, room_id: room.id });
+  }
 
   return {
     status: true,
     name: user.name,
     email: user.email,
   };
-  // Return {user_data, room_code}
-  return { status: true };
 }
 
 export async function askQuestionAction({ question, code, attendee, email }) {

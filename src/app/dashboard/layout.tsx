@@ -21,6 +21,10 @@ export default async function Layout({
           <SidebarProvider>
             <AppSidebar />
             <main className="w-full h-screen overflow-y-auto min-h-screen">
+              <div className="w-full text-center p-3 text-xs bg-gray-200">
+                This application is in Beta, so not all features work and there
+                may be issues ocassionally 😓
+              </div>
               <SidebarTrigger className="md:hidden" />
               {children}
             </main>
