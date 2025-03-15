@@ -1,4 +1,5 @@
 import supabase from "@/config/supabase";
+import getOpenAIClient from "@/config/openai";
 
 export async function createHost({
   fullName: full_name,
@@ -166,8 +167,6 @@ export async function addQuestion({ question, room_id, attendee, email }) {
   return data;
 }
 
-export async function getQuestions({}) {}
-
 export async function getAllAttendees({ room_id }) {
   let { data: Attendees, error } = await supabase
     .from("Attendees")
@@ -182,4 +181,15 @@ export async function getAllAttendees({ room_id }) {
 export async function numOfAttendees({ room_id }) {
   const attendees = await getAllAttendees({ room_id });
   return attendees?.length || 0;
+}
+
+export async function summarize({ questions }) {
+  const client = getOpenAIClient();
+  const response = await client.responses.create({
+    model: "gpt-4o-mini",
+    instructions:
+      "You are an assistant to a webinar host. Attendees will submit various questions, which may include duplicates, spam, or irrelevant text. Your task is to analyze all incoming questions and generate a concise, well-structured summary that captures the most relevant and commonly asked topics. Your summary should be a refined set of questions that, if answered by the host, would effectively address the concerns of all attendees. Remove redundant, off-topic, or low-quality inputs while preserving the key themes of discussion.",
+    input: questions.join("\n"),
+  });
+  return response.output_text;
 }

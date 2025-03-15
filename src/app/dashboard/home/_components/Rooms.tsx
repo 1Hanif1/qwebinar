@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { useHostContext } from "@/contexts/HostContext";
-import { activateRoomAction, deleteRoomAction } from "@/lib/actions";
+import {
+  activateRoomAction,
+  deleteRoomAction,
+  summarizeAction,
+} from "@/lib/actions";
 import { useActionState, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import supabase from "@/config/supabase";
@@ -27,7 +31,7 @@ interface Question {
 interface RoomData {
   attendees: number;
   numQuestions: number;
-  aiSummary: any[]; // Adjust the type as needed
+  aiSummary: string; // Adjust the type as needed
   questions: Question[];
 }
 
@@ -42,7 +46,7 @@ function RoomSummaryModal({
   const [roomData, setRoomData] = useState<RoomData>({
     attendees: 0,
     numQuestions: 0,
-    aiSummary: [],
+    aiSummary: "",
     questions: [],
   });
   const [loading, setLoading] = useState(false);
@@ -125,30 +129,36 @@ function RoomSummaryModal({
       .subscribe();
 
     // Subscribe to Attendees Table
-    // const attendeesSubscription = supabase
-    //   .channel("attendees")
-    //   .on(
-    //     "postgres_changes",
-    //     {
-    //       event: "UPDATE",
-    //       schema: "public",
-    //       table: "attendees",
-    //       filter: `room_id=eq.${roomId}`,
-    //     },
-    //     (payload) => {
-    //       setRoomData((prev) => ({
-    //         ...prev,
-    //         attendees: payload.new.attendee_count || prev.attendees,
-    //       }));
-    //     }
-    //   )
-    //   .subscribe();
+    const attendeesSubscription = supabase
+      .channel("attendees")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "attendees",
+          filter: `room_id=eq.${roomId}`,
+        },
+        (payload) => {
+          console.log(payload);
+          // setRoomData((prev) => ({
+          //   ...prev,
+          //   attendees: payload.new.attendee_count || prev.attendees,
+          // }));
+        }
+      )
+      .subscribe();
 
     return () => {
       supabase.removeChannel(questionsSubscription);
-      // supabase.removeChannel(attendeesSubscription);
+      supabase.removeChannel(attendeesSubscription);
     };
   }, [roomId]);
+
+  async function summaryHandler() {
+    const summary = await summarizeAction({ questions: roomData.questions });
+    setRoomData((prev) => ({ ...prev, aiSummary: summary }));
+  }
 
   return (
     <div className="bg-slate-500/20 backdrop-blur-3xl py-10 px-5 md:p-10 absolute w-full h-full z-10 flex justify-center">
@@ -167,7 +177,10 @@ function RoomSummaryModal({
           </div>
           {roomData.questions.length > 0 && (
             <div>
-              <Button disabled={roomData.questions.length < 20}>
+              <Button
+                onClick={summaryHandler}
+                disabled={roomData.questions.length < 20}
+              >
                 Summarize
               </Button>
             </div>
@@ -178,14 +191,12 @@ function RoomSummaryModal({
           <div className="bg-primary/50 p-5 rounded-xl my-4">
             <div className="flex justify-between items-center mb-4">
               <h2>AI Summary ✨</h2>
-              <p className="bg-white px-4 text-sm py-1 rounded-full">
+              {/* <p className="bg-white px-4 text-sm py-1 rounded-full">
                 summarized 10s ago
-              </p>
+              </p> */}
             </div>
             <div className="max-h-24 overflow-scroll">
-              <p>1. Here goes a summarized question</p>
-              <p>1. Here goes a summarized question</p>
-              <p>1. Here goes a summarized question</p>
+              <p>{roomData.aiSummary}</p>
             </div>
           </div>
         )}

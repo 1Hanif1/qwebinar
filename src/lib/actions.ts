@@ -1,5 +1,4 @@
 "use server";
-
 import { getServerSession } from "next-auth";
 import {
   activateRoom,
@@ -11,6 +10,7 @@ import {
   getAttendee,
   getRoom,
   getRoomFromCode,
+  summarize,
 } from "./data-service";
 import { authOptions } from "./auth";
 
@@ -60,7 +60,6 @@ export async function createRoomAction(
   }
 }
 
-// {status, data, error}
 export async function joinRoomAction({ code, name, email }) {
   const room = await getRoomFromCode({ code });
   if (!room) return { status: false, data: null, error: "No room found" };
@@ -110,4 +109,7 @@ export async function askQuestionAction({ question, code, attendee, email }) {
   return { status: true };
 }
 
-export async function SignOutAction() {}
+export async function summarizeAction({ questions }) {
+  // if (questions.length <= 20) return;
+  return summarize({ questions });
+}
