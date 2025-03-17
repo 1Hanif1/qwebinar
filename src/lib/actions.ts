@@ -110,6 +110,10 @@ export async function askQuestionAction({ question, code, attendee, email }) {
 }
 
 export async function summarizeAction({ questions }) {
-  // if (questions.length <= 20) return;
+  if (questions.length <= 20) return;
+  questions = questions.reduce(
+    (acc, item) => (acc += item.question + "\n"),
+    ""
+  );
   return summarize({ questions });
 }

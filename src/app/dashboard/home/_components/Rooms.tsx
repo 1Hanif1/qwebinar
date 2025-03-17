@@ -31,7 +31,7 @@ interface Question {
 interface RoomData {
   attendees: number;
   numQuestions: number;
-  aiSummary: string; // Adjust the type as needed
+  aiSummary: string[]; // Adjust the type as needed
   questions: Question[];
 }
 
@@ -46,7 +46,7 @@ function RoomSummaryModal({
   const [roomData, setRoomData] = useState<RoomData>({
     attendees: 0,
     numQuestions: 0,
-    aiSummary: "",
+    aiSummary: [],
     questions: [],
   });
   const [loading, setLoading] = useState(false);
@@ -156,8 +156,13 @@ function RoomSummaryModal({
   }, [roomId]);
 
   async function summaryHandler() {
+    setLoading(true);
     const summary = await summarizeAction({ questions: roomData.questions });
-    setRoomData((prev) => ({ ...prev, aiSummary: summary }));
+    setRoomData((prev) => ({
+      ...prev,
+      aiSummary: summary?.split("*") || [],
+    }));
+    setLoading(false);
   }
 
   return (
@@ -186,45 +191,50 @@ function RoomSummaryModal({
             </div>
           )}
         </div>
-        {loading && <Spinner />}
-        {roomData.aiSummary.length > 0 && (
-          <div className="bg-primary/50 p-5 rounded-xl my-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2>AI Summary ✨</h2>
-              {/* <p className="bg-white px-4 text-sm py-1 rounded-full">
-                summarized 10s ago
-              </p> */}
-            </div>
-            <div className="max-h-24 overflow-scroll">
-              <p>{roomData.aiSummary}</p>
-            </div>
-          </div>
-        )}
-
-        {roomData.questions.length > 0 && (
-          <div className="mt-4 flex flex-col gap-4 max-h-96 overflow-scroll">
-            <h2 className="text-xl font-bold">Questions asked by attendees</h2>
-            {roomData.questions
-              .slice()
-              .reverse()
-              .map((question, index) => (
-                <div
-                  key={index}
-                  className="bg-primary/20 p-4 rounded-lg relative"
-                >
-                  <p className="text-xs italic text-right absolute right-3 top-3">
-                    {formatTime(question.submitted_at)}
-                  </p>
-                  <p>{question.question || null}</p>
-                  {question.attendee && question.email && (
-                    <div className=" mt-2 flex justify-start gap-2 items-end">
-                      <p>{question.attendee}</p>
-                      <p className="text-sm">{question.email}</p>
-                    </div>
-                  )}
+        {loading ? (
+          <Spinner />
+        ) : (
+          <>
+            {roomData.aiSummary.length > 0 && (
+              <div className="bg-primary/50 p-5 rounded-xl my-4">
+                <div className="flex justify-between items-center mb-4">
+                  <h2>AI Summary ✨</h2>
                 </div>
-              ))}
-          </div>
+                <div className="max-h-24 overflow-scroll">
+                  {roomData.aiSummary.map((sum) => (
+                    <p key={sum}>{sum}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+            {roomData.questions.length > 0 && (
+              <div className="mt-4 flex flex-col gap-4 max-h-96 overflow-scroll">
+                <h2 className="text-xl font-bold">
+                  Questions asked by attendees
+                </h2>
+                {roomData.questions
+                  .slice()
+                  .reverse()
+                  .map((question, index) => (
+                    <div
+                      key={index}
+                      className="bg-primary/20 p-4 rounded-lg relative"
+                    >
+                      <p className="text-xs italic text-right absolute right-3 top-3">
+                        {formatTime(question.submitted_at)}
+                      </p>
+                      <p>{question.question || null}</p>
+                      {question.attendee && question.email && (
+                        <div className=" mt-2 flex justify-start gap-2 items-end">
+                          <p>{question.attendee}</p>
+                          <p className="text-sm">{question.email}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
